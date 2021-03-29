@@ -26,8 +26,8 @@ app = Flask(__name__)
 
 # récuperation email et passwd
 def recup():
-    email = request.args['email']
-    passwd = request.args['passwd']
+    email = request.args.get('email')
+    passwd = request.args.get('passwd')
     return email, passwd
 
 # index
@@ -39,21 +39,21 @@ def index():
         return 'Hello World'
 
 # login
-@app.route('/login/')
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
-    if request.method == 'GET':
+    if request.method == 'GET' or request.method == 'POST':
         session['email'] = request.args['email']
         return jsonify({'connection' : True})
 
 # logout
-@app.route('/logout/')
+@app.route('/logout')
 def logout():
     recup()
     session.pop('email', None)
     return jsonify({'deconnection' : True})
 
 # register
-@app.route('/register/')
+@app.route('/register', methods = ['GET', 'POST'])
 def register():
     email, passwd = recup()
     r.set('email', email)
@@ -61,7 +61,7 @@ def register():
     return jsonify({'registering' : True})
 
 # otp
-@app.route('/otp/')
+@app.route('/otp', methods = ['GET', 'POST'])
 def otp():
     email = recup()
     # création session smtp
@@ -76,7 +76,7 @@ def otp():
     return jsonify({'otp' : True})
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
 """
 question1 : pourquoi utiliser bcrypt ? ne pas stocker les mdp en clair, hashage + salage, peu etre ralentie en augmentant le nombre de pssage dans la focntion
